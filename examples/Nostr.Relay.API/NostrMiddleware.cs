@@ -6,11 +6,11 @@ using System.Net.WebSockets;
 internal class NostrMiddleware : IMiddleware
 {
     private static readonly INostrRelay _relay = new NostrRelay();
-    private readonly NostrMessageHandler _nostrMessageHandler;
+    private readonly NostrMessagePropagator _messagePropagator;
 
-    public NostrMiddleware(NostrMessageHandler nostrEventHandler)
+    public NostrMiddleware(NostrMessagePropagator messagePropagator)
     {
-        _nostrMessageHandler = nostrEventHandler;
+        _messagePropagator = messagePropagator;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -21,25 +21,20 @@ internal class NostrMiddleware : IMiddleware
             return;
         }
 
-        await DoReceiveMessages(context);
-    }
-
-    private async Task DoReceiveMessages(HttpContext context)
-    {
-        using NostrWebSocketConnection socket = new NostrWebSocketConnection(context.TraceIdentifier, await context.WebSockets.AcceptWebSocketAsync());
+        using NostrWebSocketConnection socket = new (context.TraceIdentifier, await context.WebSockets.AcceptWebSocketAsync());
         _relay.AddConnection(socket);
 
         while (socket.IsConnectionOpen)
         {
-            var response = await socket.ReceiveMessage();
+            var (Result, Message) = await socket.ReceiveMessage();
 
-            if (response.Result.MessageType == WebSocketMessageType.Text)
+            if (Result.MessageType == WebSocketMessageType.Text)
             {
-                await _nostrMessageHandler.HandleMessage(new NostrMessage(socket.Id, response.Message));
+                await _messagePropagator.HandleMessage(new NostrMessage(socket.Id, Message));
             }
-            else if (response.Result.MessageType == WebSocketMessageType.Close)
+            else if (Result.MessageType == WebSocketMessageType.Close)
             {
-                await _nostrMessageHandler.Disconnect(new NostrMessage(socket.Id, response.Message));
+                await _messagePropagator.Disconnect(new NostrMessage(socket.Id, Message));
             }
         }
 

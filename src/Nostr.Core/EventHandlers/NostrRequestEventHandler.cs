@@ -23,7 +23,7 @@ public class NostrRequestEventHandler : INostrRequestEventHandler
                 filters.AddFilter(json[i]);
             }
 
-            // Send filters update request
+            // Get events
             var events = await _manager.ConfigureFilters(filters);
         }
         catch (Exception ex)

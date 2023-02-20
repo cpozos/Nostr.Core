@@ -1,7 +1,7 @@
 using Nostr.Core;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddTransient<NostrMessageHandler>();
+builder.Services.AddTransient<NostrMessagePropagator>();
 builder.Services.AddTransient<NostrMiddleware>();
 
 var app = builder.Build();

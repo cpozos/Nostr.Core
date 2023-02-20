@@ -4,7 +4,7 @@ using Nostr.Core.Interfaces;
 
 namespace Nostr.Core;
 
-public class NostrMessageHandler
+public class NostrMessagePropagator
 {
     private readonly INostrRequestEventHandler nostrRequestHandler = new NostrRequestEventHandler();
     private readonly INostrPublishEventHandler nostrPublishHandler = new NostrPublishEventHandler();
