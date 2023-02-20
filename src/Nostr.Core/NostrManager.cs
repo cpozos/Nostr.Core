@@ -1,7 +1,7 @@
 ﻿using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
 
-namespace Nostr.Core.Domain;
+namespace Nostr.Core;
 
 internal class NostrManager : INostrManager
 {
