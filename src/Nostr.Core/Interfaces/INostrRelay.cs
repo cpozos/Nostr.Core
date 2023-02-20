@@ -1,5 +1,6 @@
 ﻿namespace Nostr.Core.Interfaces;
 
-internal interface INostrRelay
+public interface INostrRelay
 {
+    void AddConnection(INostrConnection connection)
 }

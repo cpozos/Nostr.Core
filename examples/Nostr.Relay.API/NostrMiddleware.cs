@@ -1,6 +1,7 @@
 ﻿using Nostr.Core;
 using Nostr.Core.Communication;
 using Nostr.Core.DTOs;
+using Nostr.Core.Interfaces;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Net.WebSockets;
@@ -8,6 +9,7 @@ using System.Text;
 
 internal class NostrMiddleware : IMiddleware
 {
+    private static readonly INostrRelay _relay = new NostrRelay();
     private readonly NostrMessageHandler _nostrMessageHandler;
     private readonly ConcurrentDictionary<string, WebSocket> _webScokets = new();
 
