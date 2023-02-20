@@ -1,5 +1,5 @@
 ﻿using Nostr.Core.Domain;
-using Nostr.Core.DTOs;
+using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
 using System.Text.Json;
 
@@ -9,7 +9,7 @@ public class NostrRequestEventHandler : INostrRequestEventHandler
 {
     private readonly INostrManager _manager = new NostrManager();
 
-    public Task Handle(NostrMessage nostrMessage)
+    public async Task Handle(NostrMessage nostrMessage)
     {
         try
         {
@@ -17,19 +17,17 @@ public class NostrRequestEventHandler : INostrRequestEventHandler
             var json = jsonDoc.RootElement;
 
             // Parse filters
-            var action = new AddUpdateNostrFilters(nostrMessage.ConnectionId, json[1].GetString());
+            var filters = new NostrFilters(nostrMessage.ConnectionId, json[1].GetString());
             for (int i = 2; i < json.GetArrayLength(); i++)
             {
-                action.AddFilter(json[i]);
+                filters.AddFilter(json[i]);
             }
 
             // Send filters update request
-            var events = _manager.ConfigureFilters(action);
+            var events = await _manager.ConfigureFilters(filters);
         }
         catch (Exception ex)
         {
         }
-
-        return Task.CompletedTask;
     }
 }

@@ -3,7 +3,7 @@ using Nostr.Core.JsonConverters;
 
 namespace Nostr.Core.Communication;
 
-public class NostrFilter
+public class NostrFilterRequest
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("ids")] 

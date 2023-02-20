@@ -1,13 +1,12 @@
-﻿using Nostr.Core.DTOs;
+﻿using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
-using Nostr.Core.Models;
 
 namespace Nostr.Core.Domain;
 
 internal class NostrManager : INostrManager
 {
-    public Task<NostrEvent[]> ConfigureFilters(AddUpdateNostrFilters context)
+    public Task<NostrEventRequest[]> ConfigureFilters(NostrFilters context)
     {
-        return Task.FromResult(Array.Empty<NostrEvent>());
+        return Task.FromResult(Array.Empty<NostrEventRequest>());
     }
 }

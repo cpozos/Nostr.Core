@@ -2,7 +2,7 @@
 
 namespace Nostr.Core.Models;
 
-public record NostrEvent
+public record NostrEventRequest
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }

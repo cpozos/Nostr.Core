@@ -2,5 +2,6 @@
 
 public interface INostrRelay
 {
-    void AddConnection(INostrConnection connection)
+    void AddConnection(INostrConnection connection);
+    void RemoveConnection(INostrConnection connection);
 }

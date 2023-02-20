@@ -1,4 +1,4 @@
-﻿using Nostr.Core.DTOs;
+﻿using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
 using System.Collections.Concurrent;
 using System.Threading.Channels;
@@ -16,26 +16,31 @@ public class NostrRelay : INostrRelay
 		_connections.TryAdd(connection.Id, connection);
 	}
 
+    public void RemoveConnection(INostrConnection connection)
+    {
+        _connections.Remove(connection.Id, out var _);
+    }
+
     public async Task ProcessSendMessages(CancellationToken cancellationToken)
     {
         while (await PendingMessages.Reader.WaitToReadAsync(cancellationToken))
         {
-            if (PendingMessages.Reader.TryRead(out var message))
+            try
             {
-                try
+                if (PendingMessages.Reader.TryRead(out var message))
                 {
                     if (_connections.TryGetValue(message.ConnectionId, out var conn))
                     {
                         await conn.SendMessage(message, cancellationToken);
                     }
                 }
-                catch when (cancellationToken.IsCancellationRequested)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                }
+            }
+            catch when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
             }
         }
     }

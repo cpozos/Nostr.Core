@@ -1,4 +1,4 @@
-﻿using Nostr.Core.DTOs;
+﻿using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
 
 namespace Nostr.Core.EventHandlers;
