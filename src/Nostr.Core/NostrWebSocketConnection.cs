@@ -9,7 +9,6 @@ public class NostrWebSocketConnection : INostrConnection, IDisposable
     private readonly WebSocket _socket;
     private bool disposedValue;
 
-
     public NostrWebSocketConnection(string id, WebSocket socket)
 	{
         _socket = socket;
@@ -19,16 +18,6 @@ public class NostrWebSocketConnection : INostrConnection, IDisposable
     public string Id { get; set; }
 
     public bool IsConnectionOpen => _socket?.State == WebSocketState.Open;
-
-    public async Task SendMessage(NostrMessage nostrMessage, CancellationToken cancellationToken)
-    {
-        if (_socket is null || _socket.State != WebSocketState.Open)
-            return;
-
-        var buffer = Encoding.UTF8.GetBytes(nostrMessage.Message);
-        await _socket.SendAsync(new Memory<byte>(buffer), WebSocketMessageType.Text, true, cancellationToken);
-    }
-
 
     protected virtual void Dispose(bool disposing)
     {
@@ -48,6 +37,15 @@ public class NostrWebSocketConnection : INostrConnection, IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    public async Task SendMessage(NostrMessage nostrMessage, CancellationToken cancellationToken)
+    {
+        if (_socket is null || _socket.State != WebSocketState.Open)
+            return;
+
+        var buffer = Encoding.UTF8.GetBytes(nostrMessage.Message);
+        await _socket.SendAsync(new Memory<byte>(buffer), WebSocketMessageType.Text, true, cancellationToken);
     }
 
     public async Task<(WebSocketReceiveResult Result, string Message)> ReceiveMessage()
