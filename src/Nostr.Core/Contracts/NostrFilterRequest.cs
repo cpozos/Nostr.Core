@@ -1,20 +1,20 @@
 ﻿using System.Text.Json.Serialization;
 using Nostr.Core.JsonConverters;
 
-namespace Nostr.Core.Communication;
+namespace Nostr.Core.Contracts;
 
-public class NostrFilter
+public record NostrFilterRequest
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("ids")] 
+    [JsonPropertyName("ids")]
     public string[]? Ids { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("authors")] 
+    [JsonPropertyName("authors")]
     public string[]? Authors { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("kinds")] 
+    [JsonPropertyName("kinds")]
     public int[]? Kinds { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -26,7 +26,8 @@ public class NostrFilter
     public string[]? PublicKey { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("since")][JsonConverter(typeof(UnixTimestampSecondsJsonConverter))]
+    [JsonPropertyName("since")]
+    [JsonConverter(typeof(UnixTimestampSecondsJsonConverter))]
     public DateTimeOffset? Since { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

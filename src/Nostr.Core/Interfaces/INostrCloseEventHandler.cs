@@ -1,4 +1,4 @@
-﻿using Nostr.Core.DTOs;
+﻿using Nostr.Core.Models;
 
 namespace Nostr.Core.Interfaces;
 

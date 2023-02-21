@@ -1,19 +1,16 @@
 ﻿using Nostr.Core;
-using Nostr.Core.Communication;
-using Nostr.Core.DTOs;
-using System.Collections.Concurrent;
-using System.Net.Sockets;
+using Nostr.Core.Models;
+using Nostr.Core.Interfaces;
 using System.Net.WebSockets;
-using System.Text;
 
 internal class NostrMiddleware : IMiddleware
 {
-    private readonly NostrMessageHandler _nostrMessageHandler;
-    private readonly ConcurrentDictionary<string, WebSocket> _webScokets = new();
+    private static readonly INostrRelay _relay = new NostrRelay();
+    private readonly NostrMessagePropagator _messagePropagator;
 
-    public NostrMiddleware(NostrMessageHandler nostrEventHandler)
+    public NostrMiddleware(NostrMessagePropagator messagePropagator)
     {
-        _nostrMessageHandler = nostrEventHandler;
+        _messagePropagator = messagePropagator;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -24,52 +21,23 @@ internal class NostrMiddleware : IMiddleware
             return;
         }
 
-        await DoReceiveMessages(context);
-    }
+        using NostrWebSocketConnection socket = new (context.TraceIdentifier, await context.WebSockets.AcceptWebSocketAsync());
+        _relay.AddConnection(socket);
 
-    private async Task DoReceiveMessages(HttpContext context)
-    {
-        using WebSocket socket = await context.WebSockets.AcceptWebSocketAsync();
-       
-        string connectionId = context.TraceIdentifier;
-        _webScokets.TryAdd(connectionId, socket);
-
-        while (socket.State == WebSocketState.Open)
+        while (socket.IsConnectionOpen)
         {
-            var arraySegment = new ArraySegment<byte>(new byte[1024 * 4]);
-            string message;
-            WebSocketReceiveResult result;
+            var (Result, Message) = await socket.ReceiveMessage();
 
-            try
+            if (Result.MessageType == WebSocketMessageType.Text)
             {
-                using var ms = new MemoryStream();
-                do
-                {
-                    result = await socket.ReceiveAsync(arraySegment, CancellationToken.None)
-                        .ConfigureAwait(false);
-
-                    ms.Write(arraySegment.Array!, arraySegment.Offset, result.Count);
-                } while (!result.EndOfMessage);
-
-                ms.Seek(0, SeekOrigin.Begin);
-                using var reader = new StreamReader(ms, Encoding.UTF8);
-                message = await reader.ReadToEndAsync().ConfigureAwait(false);
+                await _messagePropagator.HandleMessage(new NostrMessage(socket.Id, Message), socket);
             }
-            catch (Exception e)
+            else if (Result.MessageType == WebSocketMessageType.Close)
             {
-                throw e;
-            }
-
-            if (result.MessageType == WebSocketMessageType.Text)
-            {
-                await _nostrMessageHandler.HandleMessage(new NostrMessage(connectionId, message));
-            }
-            else if (result.MessageType == WebSocketMessageType.Close)
-            {
-                await _nostrMessageHandler.Disconnect(new NostrMessage(connectionId, message));
+                await _messagePropagator.Disconnect(new NostrMessage(socket.Id, Message));
             }
         }
 
-        _webScokets.TryRemove(context.TraceIdentifier, out var _);
+        _relay.RemoveConnection(socket);
     }
 }
