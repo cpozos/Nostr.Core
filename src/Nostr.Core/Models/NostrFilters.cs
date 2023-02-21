@@ -1,4 +1,4 @@
-﻿using Nostr.Core.Communication;
+﻿using Nostr.Core.Contracts;
 using Nostr.Core.Extensions;
 using System.Text.Json;
 

@@ -1,7 +1,7 @@
 ﻿using Nostr.Core.JsonConverters;
 using System.Text.Json.Serialization;
 
-namespace Nostr.Core.Models;
+namespace Nostr.Core.Contracts;
 
 public record NostrEventRequest
 {

@@ -1,5 +1,4 @@
-﻿using Nostr.Core.Communication;
-using Nostr.Core.Models;
+﻿using Nostr.Core.Contracts;
 
 namespace Nostr.Core.Persistence;
 

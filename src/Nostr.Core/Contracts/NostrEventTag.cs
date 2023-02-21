@@ -1,4 +1,4 @@
-﻿namespace Nostr.Core.Models;
+﻿namespace Nostr.Core.Contracts;
 
 public record NostrEventTag
 {

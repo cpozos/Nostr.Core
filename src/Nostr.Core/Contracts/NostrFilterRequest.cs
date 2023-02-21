@@ -1,8 +1,7 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Nostr.Core.JsonConverters;
 
-namespace Nostr.Core.Communication;
+namespace Nostr.Core.Contracts;
 
 public record NostrFilterRequest
 {
