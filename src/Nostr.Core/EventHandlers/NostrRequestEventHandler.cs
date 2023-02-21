@@ -1,5 +1,4 @@
-﻿using Nostr.Core.Domain;
-using Nostr.Core.Models;
+﻿using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
 using System.Text.Json;
 

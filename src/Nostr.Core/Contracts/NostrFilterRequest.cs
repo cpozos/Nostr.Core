@@ -3,7 +3,7 @@ using Nostr.Core.JsonConverters;
 
 namespace Nostr.Core.Communication;
 
-public class NostrFilterRequest
+public record NostrFilterRequest
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("ids")] 
@@ -26,7 +26,8 @@ public class NostrFilterRequest
     public string[]? PublicKey { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("since")][JsonConverter(typeof(UnixTimestampSecondsJsonConverter))]
+    [JsonPropertyName("since")]
+    [JsonConverter(typeof(UnixTimestampSecondsJsonConverter))]
     public DateTimeOffset? Since { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
