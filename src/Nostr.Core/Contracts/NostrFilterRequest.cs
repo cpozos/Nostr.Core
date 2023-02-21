@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Nostr.Core.JsonConverters;
 
 namespace Nostr.Core.Communication;
@@ -6,15 +7,15 @@ namespace Nostr.Core.Communication;
 public record NostrFilterRequest
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("ids")] 
+    [JsonPropertyName("ids")]
     public string[]? Ids { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("authors")] 
+    [JsonPropertyName("authors")]
     public string[]? Authors { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("kinds")] 
+    [JsonPropertyName("kinds")]
     public int[]? Kinds { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

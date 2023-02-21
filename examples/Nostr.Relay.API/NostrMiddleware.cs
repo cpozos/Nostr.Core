@@ -30,7 +30,7 @@ internal class NostrMiddleware : IMiddleware
 
             if (Result.MessageType == WebSocketMessageType.Text)
             {
-                await _messagePropagator.HandleMessage(new NostrMessage(socket.Id, Message));
+                await _messagePropagator.HandleMessage(new NostrMessage(socket.Id, Message), socket);
             }
             else if (Result.MessageType == WebSocketMessageType.Close)
             {

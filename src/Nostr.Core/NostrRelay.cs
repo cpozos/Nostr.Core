@@ -5,9 +5,9 @@ using System.Threading.Channels;
 
 namespace Nostr.Core;
 
-public class NostrRelay : INostrRelay
+public class NostrRelay : INostrRelay, INostrResponsesDispatcher
 {
-    public readonly Channel<NostrMessage> PendingMessages = Channel.CreateUnbounded<NostrMessage>();
+    private readonly Channel<NostrMessage> _channel = Channel.CreateUnbounded<NostrMessage>();
 
     private readonly ConcurrentDictionary<string, INostrConnection> _connections = new();
 
@@ -21,25 +21,29 @@ public class NostrRelay : INostrRelay
         _connections.Remove(connection.Id, out var _);
     }
 
-    public async Task ProcessSendMessages(CancellationToken cancellationToken)
+    public async Task StartReadMessages(CancellationToken cancellationToken)
     {
-        while (await PendingMessages.Reader.WaitToReadAsync(cancellationToken))
+        while (await _channel.Reader.WaitToReadAsync())
         {
+            if (!_channel.Reader.TryRead(out NostrMessage? message))
+            {
+                continue;
+            }
+
             try
             {
-                if (PendingMessages.Reader.TryRead(out var message))
+                if (!_connections.TryGetValue(message.ConnectionId, out INostrConnection? conn))
                 {
-                    if (_connections.TryGetValue(message.ConnectionId, out var conn))
-                    {
-                        await conn.SendMessage(message, cancellationToken);
-                    }
+                    continue;
                 }
+
+                await conn.SendMessage(message, cancellationToken);
             }
             catch when (cancellationToken.IsCancellationRequested)
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
             }
         }

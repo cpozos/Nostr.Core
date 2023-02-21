@@ -1,29 +1,29 @@
 ﻿using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
 using System.Text.Json;
+using Nostr.Core.Communication;
 
 namespace Nostr.Core.EventHandlers;
 
 public class NostrRequestEventHandler : INostrRequestEventHandler
 {
-    private readonly INostrManager _manager = new NostrManager();
+    public NostrRequestEventHandler()
+    {
+    }
 
-    public async Task Handle(NostrMessage nostrMessage)
+    public async Task Handle(NostrMessage nostrMessage, INostrConnection connection, INostrRepo nostrRepo)
     {
         try
         {
+            // Parse json
             using var jsonDoc = JsonDocument.Parse(nostrMessage.Message);
             var json = jsonDoc.RootElement;
+            string? subscriptionId = json[1].GetString();
+            var filters = JsonSerializer.Deserialize<NostrFilterRequest>(json[2]);
 
-            // Parse filters
-            var filters = new NostrFilters(nostrMessage.ConnectionId, json[1].GetString());
-            for (int i = 2; i < json.GetArrayLength(); i++)
-            {
-                filters.AddFilter(json[i]);
-            }
-
-            // Get events
-            var events = await _manager.ConfigureFilters(filters);
+            // Get events filtering by the filters
+            var events = await nostrRepo.GetEvents(filters);
+            await connection.SendMessage(nostrMessage with { Message = JsonSerializer.Serialize(events) }, CancellationToken.None);
         }
         catch (Exception ex)
         {

@@ -8,7 +8,8 @@ public class NostrFilters
 {
     public string ConnectionId { get; init; }
     public string SubscriptionId { get; init; }
-    public Dictionary<string, NostrFilterRequest> Filters { get; init; } = new();
+
+    private readonly Dictionary<string, NostrFilterRequest> _filters = new();
 
     public NostrFilters(string? connectionId, string? subscriptionId)
     {
@@ -21,12 +22,14 @@ public class NostrFilters
     public void AddFilter(JsonElement jsonElement)
     {
         string txt = jsonElement.GetRawText();
-        Filters.Add(txt.ComputeSha256Hash().AsSpan().ToHex(), JsonSerializer.Deserialize<NostrFilterRequest>(jsonElement));
+        _filters.Add(txt.ComputeSha256Hash().AsSpan().ToHex(), JsonSerializer.Deserialize<NostrFilterRequest>(jsonElement));
     }
 
     public void AddFilter(NostrFilterRequest nostrFilter)
     {
         string txt = JsonSerializer.Serialize(nostrFilter);
-        Filters.Add(txt.ComputeSha256Hash().AsSpan().ToHex(), nostrFilter);
+        _filters.Add(txt.ComputeSha256Hash().AsSpan().ToHex(), nostrFilter);
     }
+
+    public IEnumerable<NostrFilterRequest> Filters => _filters.Values.AsEnumerable();
 }

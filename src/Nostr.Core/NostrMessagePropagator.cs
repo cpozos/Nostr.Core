@@ -9,12 +9,13 @@ public class NostrMessagePropagator
     private readonly INostrRequestEventHandler nostrRequestHandler = new NostrRequestEventHandler();
     private readonly INostrPublishEventHandler nostrPublishHandler = new NostrPublishEventHandler();
     private readonly INostrCloseEventHandler nostrCloseHandler = new NostrCloseEventHandler();
+    private readonly INostrRepo nostrEventRepo = new NostrRepo();
 
-    public Task HandleMessage(NostrMessage nostrMessage)
+    public Task HandleMessage(NostrMessage nostrMessage, INostrConnection connection)
     {
         if (nostrMessage.Message.StartsWith("[\"REQ", StringComparison.OrdinalIgnoreCase))
         {
-            return nostrRequestHandler.Handle(nostrMessage);
+            return nostrRequestHandler.Handle(nostrMessage, connection, nostrEventRepo);
         }
         else if (nostrMessage.Message.StartsWith("[\"EVENT", StringComparison.OrdinalIgnoreCase))
         {
