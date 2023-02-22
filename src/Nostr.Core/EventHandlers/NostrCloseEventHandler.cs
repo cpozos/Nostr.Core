@@ -3,10 +3,14 @@ using Nostr.Core.Interfaces;
 
 namespace Nostr.Core.EventHandlers;
 
-internal class NostrCloseEventHandler : INostrCloseEventHandler
+public class NostrCloseEventHandler : INostrCloseEventHandler
 {
-    public Task Handle(NostrMessage nostrMessage)
+    public async Task Handle(NostrMessage nostrMessage, INostrRepo repo)
     {
-        return Task.CompletedTask;
+        // Get subscriptions for given connection
+        var subscriptions = new List<NostrSubscription>();
+
+        // Remove subscriptions' filters
+        await repo.RemoveFilters(subscriptions.ToArray());
     }
 }

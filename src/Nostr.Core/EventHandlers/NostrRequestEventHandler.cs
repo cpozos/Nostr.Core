@@ -7,10 +7,6 @@ namespace Nostr.Core.EventHandlers;
 
 public class NostrRequestEventHandler : INostrRequestEventHandler
 {
-    public NostrRequestEventHandler()
-    {
-    }
-
     public async Task Handle(NostrMessage nostrMessage, INostrConnection connection, INostrRepo nostrRepo)
     {
         try
