@@ -34,7 +34,7 @@ internal class NostrMiddleware : IMiddleware
             }
             else if (Result.MessageType == WebSocketMessageType.Close)
             {
-                await _messagePropagator.Disconnect(new NostrMessage(socket.Id, Message));
+                await _messagePropagator.Disconnect(new NostrMessage(socket.Id, Message), socket);
             }
         }
 

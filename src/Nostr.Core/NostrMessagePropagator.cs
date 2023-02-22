@@ -24,7 +24,7 @@ public class NostrMessagePropagator
         }
         else if (nostrMessage.Message.StartsWith("[\"CLOSE", StringComparison.OrdinalIgnoreCase))
         {
-            return nostrCloseHandler.Handle(nostrMessage);
+            return Disconnect(nostrMessage, connection);
         }
         else
         {
@@ -32,8 +32,11 @@ public class NostrMessagePropagator
         }
     }
 
-    public Task Disconnect(NostrMessage nostrMessage)
+    public async Task Disconnect(NostrMessage nostrMessage, INostrConnection connection)
     {
-        return Task.CompletedTask;
+        await nostrCloseHandler.Handle(nostrMessage, nostrEventRepo);
+
+        // TOOD: Should it be disconnected ?
+        await connection.Disconnect();
     }
 }

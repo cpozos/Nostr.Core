@@ -1,4 +1,5 @@
 ﻿using Nostr.Core.Models;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 
@@ -75,5 +76,13 @@ public class NostrWebSocketConnection : INostrConnection, IDisposable
         }
 
         return (result, message);
+    }
+
+    public async Task Disconnect()
+    {
+        if (_socket.State == WebSocketState.Open)
+        {
+            await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+        }
     }
 }

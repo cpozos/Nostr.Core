@@ -2,15 +2,12 @@
 using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
 using System.Text.Json;
+using Nostr.Core.Persistence;
 
 namespace Nostr.Core.EventHandlers;
 
 public class NostrRequestEventHandler : INostrRequestEventHandler
 {
-    public NostrRequestEventHandler()
-    {
-    }
-
     public async Task Handle(NostrMessage nostrMessage, INostrConnection connection, INostrRepo nostrRepo)
     {
         try
