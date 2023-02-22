@@ -2,8 +2,6 @@
 using Nostr.Core.EventHandlers;
 using Nostr.Core.Interfaces;
 using Nostr.Core.Persistence;
-using System.Net.Sockets;
-using System.Net.WebSockets;
 
 namespace Nostr.Core;
 

@@ -1,5 +1,4 @@
 ﻿using Nostr.Core.Contracts;
-using Nostr.Core.Interfaces;
 using Nostr.Core.Models;
 
 namespace Nostr.Core.Persistence;

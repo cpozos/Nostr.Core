@@ -7,6 +7,5 @@ public interface INostrConnection
     public bool IsConnectionOpen { get; }
     public Task SendMessage(NostrMessage nostrMessage, CancellationToken cancellationToken);
     public Task<(WebSocketReceiveResult Result, string Message)> ReceiveMessage();
-
     public Task Disconnect();
 }

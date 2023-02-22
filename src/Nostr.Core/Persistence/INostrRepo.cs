@@ -1,7 +1,7 @@
 ﻿using Nostr.Core.Contracts;
 using Nostr.Core.Models;
 
-namespace Nostr.Core.Interfaces;
+namespace Nostr.Core.Persistence;
 
 public interface INostrRepo
 {
