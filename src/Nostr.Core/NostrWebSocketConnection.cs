@@ -1,5 +1,4 @@
 ﻿using Nostr.Core.Models;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 

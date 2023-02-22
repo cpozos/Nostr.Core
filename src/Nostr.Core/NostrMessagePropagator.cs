@@ -20,7 +20,7 @@ public class NostrMessagePropagator
         }
         else if (nostrMessage.Message.StartsWith("[\"EVENT", StringComparison.OrdinalIgnoreCase))
         {
-            return nostrPublishHandler.Handle(nostrMessage);
+            return nostrPublishHandler.Handle(nostrMessage, nostrEventRepo);
         }
         else if (nostrMessage.Message.StartsWith("[\"CLOSE", StringComparison.OrdinalIgnoreCase))
         {

@@ -1,6 +1,5 @@
 ﻿using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
-using Nostr.Core.Persistence;
 
 namespace Nostr.Core.EventHandlers;
 

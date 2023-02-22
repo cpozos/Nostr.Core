@@ -2,7 +2,6 @@
 using Nostr.Core.Models;
 using Nostr.Core.Interfaces;
 using System.Text.Json;
-using Nostr.Core.Persistence;
 
 namespace Nostr.Core.EventHandlers;
 

@@ -5,12 +5,13 @@ using System.Net.WebSockets;
 
 internal class NostrMiddleware : IMiddleware
 {
-    private static readonly INostrRelay _relay = new NostrRelay();
+    private readonly INostrRelay _relay;
     private readonly NostrMessagePropagator _messagePropagator;
 
-    public NostrMiddleware(NostrMessagePropagator messagePropagator)
+    public NostrMiddleware(INostrRelay relay, NostrMessagePropagator messagePropagator)
     {
         _messagePropagator = messagePropagator;
+        _relay = relay;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
