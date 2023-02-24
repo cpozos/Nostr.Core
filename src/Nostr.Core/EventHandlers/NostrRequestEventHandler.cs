@@ -15,11 +15,29 @@ public class NostrRequestEventHandler : INostrRequestEventHandler
             using var jsonDoc = JsonDocument.Parse(nostrMessage.Message);
             var json = jsonDoc.RootElement;
             string? subscriptionId = json[1].GetString();
+            if (string.IsNullOrWhiteSpace(subscriptionId))
+            {
+                throw new Exception("Error");
+            }
+
             var filters = JsonSerializer.Deserialize<NostrFilterRequest>(json[2]);
+            if (filters is null)
+            {
+                throw new Exception("Error");
+            }
+
+            // Updates subscription
+            var subscription = new NostrSubscription
+            {
+                Id = subscriptionId,
+                ConnectionId = connection.Id,
+            };
+            subscription.Filters.Add(filters);
+            await nostrRepo.UpsertSubscription(subscription);
 
             // Get events filtering by the filters
-            var events = await nostrRepo.GetEvents(filters);
-            await connection.SendMessage(nostrMessage with { Message = JsonSerializer.Serialize(events) }, CancellationToken.None);
+            var matchedEvents = await nostrRepo.GetEvents(filters);
+            await connection.SendMessage(nostrMessage with { Message = JsonSerializer.Serialize(matchedEvents) }, CancellationToken.None);
         }
         catch (Exception ex)
         {

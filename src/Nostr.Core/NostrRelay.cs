@@ -15,15 +15,14 @@ public class NostrRelay : INostrRelay, INostrResponsesDispatcher
 	{
 		_connections.TryAdd(connection.Id, connection);
 	}
+    public void RemoveConnection(INostrConnection connection)
+    {
+        _connections.Remove(connection.Id, out var _);
+    }
 
     public INostrConnection[] GetConnections(params string[] ids)
     {
         return _connections.Where(x => ids.Contains(x.Key)).Select(x => x.Value).ToArray();
-    }
-
-    public void RemoveConnection(INostrConnection connection)
-    {
-        _connections.Remove(connection.Id, out var _);
     }
 
     public async Task StartReadMessages(CancellationToken cancellationToken)

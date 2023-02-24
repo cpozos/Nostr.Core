@@ -1,7 +1,9 @@
-﻿using Nostr.Core.Models;
+﻿using Nostr.Core.Contracts;
+using Nostr.Core.Models;
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 
-public interface INostrConnection
+public interface INostrConnection : IDisposable
 {
     public string Id { get; set; }
     public bool IsConnectionOpen { get; }

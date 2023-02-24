@@ -10,21 +10,20 @@ public class NostrMessagePropagator
     private readonly INostrRequestEventHandler nostrRequestHandler = new NostrRequestEventHandler();
     private readonly INostrPublishEventHandler nostrPublishHandler = new NostrPublishEventHandler();
     private readonly INostrCloseEventHandler nostrCloseHandler = new NostrCloseEventHandler();
-    private readonly INostrRepo nostrEventRepo = new NostrRepo();
 
-    public Task HandleMessage(NostrMessage nostrMessage, INostrConnection connection)
+    public Task HandleMessage(NostrMessage nostrMessage, INostrConnection connection, INostrRepo nostrRepo)
     {
         if (nostrMessage.Message.StartsWith("[\"REQ", StringComparison.OrdinalIgnoreCase))
         {
-            return nostrRequestHandler.Handle(nostrMessage, connection, nostrEventRepo);
+            return nostrRequestHandler.Handle(nostrMessage, connection, nostrRepo);
         }
         else if (nostrMessage.Message.StartsWith("[\"EVENT", StringComparison.OrdinalIgnoreCase))
         {
-            return nostrPublishHandler.Handle(nostrMessage, nostrEventRepo);
+            return nostrPublishHandler.Handle(nostrMessage, nostrRepo);
         }
         else if (nostrMessage.Message.StartsWith("[\"CLOSE", StringComparison.OrdinalIgnoreCase))
         {
-            return Disconnect(nostrMessage, connection);
+            return Disconnect(nostrMessage, connection, nostrRepo);
         }
         else
         {
@@ -32,9 +31,9 @@ public class NostrMessagePropagator
         }
     }
 
-    public async Task Disconnect(NostrMessage nostrMessage, INostrConnection connection)
+    public async Task Disconnect(NostrMessage nostrMessage, INostrConnection connection, INostrRepo nostrRepo)
     {
-        await nostrCloseHandler.Handle(nostrMessage, nostrEventRepo);
+        await nostrCloseHandler.Handle(nostrMessage, nostrRepo);
 
         // TOOD: Should it be disconnected ?
         await connection.Disconnect();

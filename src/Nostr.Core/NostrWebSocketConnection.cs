@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Nostr.Core;
 
-public class NostrWebSocketConnection : INostrConnection, IDisposable
+public class NostrWebSocketConnection : INostrConnection
 {
     private readonly WebSocket _socket;
     private bool disposedValue;
@@ -18,26 +18,6 @@ public class NostrWebSocketConnection : INostrConnection, IDisposable
     public string Id { get; set; }
 
     public bool IsConnectionOpen => _socket?.State == WebSocketState.Open;
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposedValue)
-        {
-            if (disposing)
-            {
-                _socket?.Dispose();
-            }
-
-            disposedValue = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
 
     public async Task SendMessage(NostrMessage nostrMessage, CancellationToken cancellationToken)
     {
@@ -83,5 +63,25 @@ public class NostrWebSocketConnection : INostrConnection, IDisposable
         {
             await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
         }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                _socket?.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
