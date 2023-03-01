@@ -6,14 +6,13 @@ using Nostr.Core.Persistence;
 
 internal class NostrMiddleware : IMiddleware
 {
-    private readonly INostrRelay _relay;
+    private readonly Guid id = Guid.NewGuid();
     private readonly INostrRepo _nostrRepo;
     private readonly NostrMessagePropagator _messagePropagator;
 
-    public NostrMiddleware(INostrRelay relay, NostrMessagePropagator messagePropagator, INostrRepo nostrRepo)
+    public NostrMiddleware(NostrMessagePropagator messagePropagator, INostrRepo nostrRepo)
     {
         _messagePropagator = messagePropagator;
-        _relay = relay;
         _nostrRepo = nostrRepo;
     }
 
@@ -26,7 +25,6 @@ internal class NostrMiddleware : IMiddleware
         }
 
         using NostrWebSocketConnection socket = new (context.TraceIdentifier, await context.WebSockets.AcceptWebSocketAsync());
-        _relay.AddConnection(socket);
         _nostrRepo.AddConnection(socket);
 
         while (socket.IsConnectionOpen)
@@ -44,6 +42,5 @@ internal class NostrMiddleware : IMiddleware
         }
 
         _nostrRepo.RemoveConnection(socket);
-        _relay.RemoveConnection(socket);
     }
 }
